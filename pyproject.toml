@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ragtrust"
+version = "0.1.0"
+description = "canary-echo: differential testing for derived-state tenant isolation in multi-tenant RAG applications (ISSRE artifact)"
+authors = [{ name = "Lisheng Ni" }]
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.24",
+  "pyyaml>=6.0",
+  "rank-bm25==0.2.2",
+]
+
+[project.optional-dependencies]
+# Neural encoders / rerankers. Needed to reproduce the paper numbers;
+# not needed for unit tests (offline hashing encoder + lexical reranker).
+neural = [
+  "sentence-transformers>=3.0",
+  "torch>=2.1",
+]
+# Public benchmarks (SQuAD 2.0 etc.)
+data = ["datasets>=2.18"]
+dev = ["pytest>=7", "matplotlib>=3.7"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

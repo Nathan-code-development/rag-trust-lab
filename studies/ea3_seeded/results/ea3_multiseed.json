@@ -1,0 +1,84 @@
+{
+  "N_trials": 1000,
+  "classes": [
+    "D1",
+    "D2",
+    "D3",
+    "D4",
+    "D5"
+  ],
+  "methods": [
+    "canary_echo(ours)",
+    "idor_baseline",
+    "static_keying"
+  ],
+  "per_class_detection_rate": {
+    "canary_echo(ours)": {
+      "D1": 0.991,
+      "D2": 0.989,
+      "D3": 0.985,
+      "D4": 1.0,
+      "D5": 1.0
+    },
+    "idor_baseline": {
+      "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0,
+      "D5": 1.0
+    },
+    "static_keying": {
+      "D1": 1.0,
+      "D2": 1.0,
+      "D3": 1.0,
+      "D4": 1.0,
+      "D5": 0.0
+    }
+  },
+  "aggregate_recall": {
+    "canary_echo(ours)": {
+      "recall": 0.993,
+      "ci95": [
+        0.9902806229724375,
+        0.994962395111908
+      ],
+      "k": 4965,
+      "n": 5000
+    },
+    "idor_baseline": {
+      "recall": 0.2,
+      "ci95": [
+        0.1891447487413896,
+        0.21131588934115886
+      ],
+      "k": 1000,
+      "n": 5000
+    },
+    "static_keying": {
+      "recall": 0.8,
+      "ci95": [
+        0.7886841106588411,
+        0.8108552512586105
+      ],
+      "k": 4000,
+      "n": 5000
+    }
+  },
+  "false_positive_rate": {
+    "clean": {
+      "canary_echo(ours)": 0.0,
+      "idor_baseline": 0.0,
+      "static_keying": 0.0
+    },
+    "guarded_ownerless_D1": {
+      "canary_echo(ours)": 0.0,
+      "idor_baseline": 0.0,
+      "static_keying": 1.0
+    }
+  },
+  "overflag_trials": {
+    "canary_echo(ours)": 0,
+    "idor_baseline": 0,
+    "static_keying": 0
+  }
+}

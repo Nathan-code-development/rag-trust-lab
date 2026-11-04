@@ -1,0 +1,12 @@
+# khoj_cve_confirm.py output (ECS, 2026-11-03). Khoj @ ae229ca, image ghcr.io/khoj-ai/khoj:latest.
+# REST flow (khoj_cve_probe.py): upload=200, create_agent=200 (slug iso_priv_agent-176205, KB entries=1),
+#   A session=200 (cidA=136584c1-...), A share=200 (public_slug summarise-my-notes--5a09f89a),
+#   B fork=200 (cidB=73608ba5-3aae-4e43-bd23-96446132ce6d). Control chat clean (B saw no A canary).
+# Faithful retrieval/authz-layer confirmation (Khoj real code):
+
+B's forked conversations bound to an agent: 1
+  conv=73608ba5  agent=iso_priv_agent-176205  privacy=private  creator=a@test.local
+    (2) B authorized? ais_agent_accessible = False
+    (3) agent KB entries=1  contains A canary KHOJKBMARKER77? True
+
+==== CVE-2026-13508 CONFIRMED: True ====

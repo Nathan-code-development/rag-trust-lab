@@ -1,0 +1,119 @@
+{
+  "configs": [
+    "clean",
+    "D1",
+    "D2",
+    "D3",
+    "D4",
+    "D5",
+    "guarded_ownerless"
+  ],
+  "classes": [
+    "D1",
+    "D2",
+    "D3",
+    "D4",
+    "D5"
+  ],
+  "flagged": {
+    "clean|canary_echo(ours)": [],
+    "clean|idor_baseline": [],
+    "clean|static_keying": [],
+    "D1|canary_echo(ours)": [
+      "D1"
+    ],
+    "D1|idor_baseline": [],
+    "D1|static_keying": [
+      "D1"
+    ],
+    "D2|canary_echo(ours)": [
+      "D2"
+    ],
+    "D2|idor_baseline": [],
+    "D2|static_keying": [
+      "D2"
+    ],
+    "D3|canary_echo(ours)": [
+      "D3"
+    ],
+    "D3|idor_baseline": [],
+    "D3|static_keying": [
+      "D3"
+    ],
+    "D4|canary_echo(ours)": [
+      "D4"
+    ],
+    "D4|idor_baseline": [],
+    "D4|static_keying": [
+      "D4"
+    ],
+    "D5|canary_echo(ours)": [
+      "D5"
+    ],
+    "D5|idor_baseline": [
+      "D5"
+    ],
+    "D5|static_keying": [],
+    "guarded_ownerless|canary_echo(ours)": [],
+    "guarded_ownerless|idor_baseline": [],
+    "guarded_ownerless|static_keying": [
+      "D1"
+    ]
+  },
+  "recall": {
+    "canary_echo(ours)": {
+      "D1": true,
+      "D2": true,
+      "D3": true,
+      "D4": true,
+      "D5": true
+    },
+    "idor_baseline": {
+      "D1": false,
+      "D2": false,
+      "D3": false,
+      "D4": false,
+      "D5": true
+    },
+    "static_keying": {
+      "D1": true,
+      "D2": true,
+      "D3": true,
+      "D4": true,
+      "D5": false
+    }
+  },
+  "false_positives_clean": {
+    "canary_echo(ours)": [],
+    "idor_baseline": [],
+    "static_keying": []
+  },
+  "overflag": {
+    "canary_echo(ours)": {
+      "D1": [],
+      "D2": [],
+      "D3": [],
+      "D4": [],
+      "D5": []
+    },
+    "idor_baseline": {
+      "D1": [],
+      "D2": [],
+      "D3": [],
+      "D4": [],
+      "D5": []
+    },
+    "static_keying": {
+      "D1": [],
+      "D2": [],
+      "D3": [],
+      "D4": [],
+      "D5": []
+    }
+  },
+  "recall_rate": {
+    "canary_echo(ours)": 1.0,
+    "idor_baseline": 0.2,
+    "static_keying": 0.8
+  }
+}

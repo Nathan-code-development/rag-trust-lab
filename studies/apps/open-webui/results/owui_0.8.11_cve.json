@@ -1,0 +1,35 @@
+{
+  "app": "open-webui",
+  "version": "0.8.11",
+  "cve": "CVE-2026-45402",
+  "class": "D5",
+  "oracle_leak_path": "RAG retrieval (derived vector collection) -> LLM prompt",
+  "trials": {
+    "admin_attacker": {
+      "victim_file_id": "eb1dc683-3f32-42e9-a217-2f78d8f17980",
+      "attach_status": 200,
+      "O_authz_attach_succeeded": true,
+      "O_out_canary_in_answer": false,
+      "O_prompt_canary_in_prompt": true,
+      "n_prompts": 2,
+      "answer_excerpt": "Answer from provided context. Markers seen: NO_MARKERS",
+      "VERDICT": "LEAK"
+    },
+    "regular_attacker": {
+      "victim_file_id": "c9817462-3612-45f0-ac32-4c36d4d0c7fa",
+      "attach_status": 400,
+      "O_authz_attach_succeeded": false,
+      "O_out_canary_in_answer": false,
+      "O_prompt_canary_in_prompt": false,
+      "n_prompts": 0,
+      "answer_excerpt": "{\"detail\":\"Model not found\"}",
+      "VERDICT": "NO_LEAK"
+    }
+  },
+  "summary": {
+    "static_missing_file_ownership_check": true,
+    "dynamic_leak_admin_attacker": true,
+    "dynamic_leak_regular_attacker": false,
+    "downstream_defense_for_regular_users": "process_file uses get_file_by_id_and_user_id for non-admins"
+  }
+}

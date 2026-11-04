@@ -1,0 +1,141 @@
+{
+  "app": "open-webui@0.8.11",
+  "n_checks": 18,
+  "n_fail": 2,
+  "checks": [
+    {
+      "id": "S1.A.scoped",
+      "scenario": "basic",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "id": "S1.A.library",
+      "scenario": "basic",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "id": "S2.A",
+      "scenario": "cross_ask",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "id": "S1.B.scoped",
+      "scenario": "basic",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "id": "S1.B.library",
+      "scenario": "basic",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "id": "S2.B",
+      "scenario": "cross_ask",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "id": "S5.file.meta",
+      "scenario": "foreign_ids",
+      "status": "PASS",
+      "detail": "{'status': 404, 'tokens': []}"
+    },
+    {
+      "id": "S5.file.content",
+      "scenario": "foreign_ids",
+      "status": "PASS",
+      "detail": "{'status': 404, 'tokens': []}"
+    },
+    {
+      "id": "S5.kb.get",
+      "scenario": "foreign_ids",
+      "status": "PASS",
+      "detail": "{'status': 401, 'tokens': []}"
+    },
+    {
+      "id": "S4.B.delete",
+      "scenario": "delete_reupload",
+      "status": "PASS",
+      "detail": "200"
+    },
+    {
+      "id": "S4.A.no_stale",
+      "scenario": "delete_reupload",
+      "status": "PASS",
+      "detail": "{'reused_id': False, 'tokens': []}"
+    },
+    {
+      "id": "S3.C.fresh_generation",
+      "scenario": "same_file",
+      "status": "PASS",
+      "detail": "no LLM call attributed to C (served from a shared cache?)"
+    },
+    {
+      "id": "S7.ref_file",
+      "scenario": "derived_reference",
+      "status": "FAIL",
+      "detail": "{'referenced': 'file', 'tokens': ['OSCARURIAL85']}"
+    },
+    {
+      "id": "S7.ref_collection",
+      "scenario": "derived_reference",
+      "status": "PASS",
+      "detail": "{'referenced': 'collection', 'tokens': []}"
+    },
+    {
+      "id": "S8.B.delete",
+      "scenario": "delete_residue",
+      "status": "PASS",
+      "detail": "200"
+    },
+    {
+      "id": "S8.residue_A_file",
+      "scenario": "delete_residue",
+      "status": "FAIL",
+      "detail": "{'referenced': 'file', 'tokens': ['OSCARURIAL85']}"
+    },
+    {
+      "id": "S8.residue_A_collection",
+      "scenario": "delete_residue",
+      "status": "PASS",
+      "detail": "{'referenced': 'collection', 'tokens': []}"
+    },
+    {
+      "id": "P.prompt_audit",
+      "scenario": "prompt",
+      "status": "PASS",
+      "detail": "[]"
+    }
+  ],
+  "findings": [
+    {
+      "oracle": "output",
+      "actor": "A",
+      "location": "S7.file",
+      "foreign_owners": [
+        "B"
+      ],
+      "tokens": [
+        "OSCARURIAL85"
+      ],
+      "detail": ""
+    },
+    {
+      "oracle": "output",
+      "actor": "A",
+      "location": "S8.A.file",
+      "foreign_owners": [
+        "B"
+      ],
+      "tokens": [
+        "OSCARURIAL85"
+      ],
+      "detail": ""
+    }
+  ]
+}

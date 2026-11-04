@@ -1,0 +1,50 @@
+{
+  "app": "open-webui",
+  "version": "0.8.11",
+  "victim_file": "c364b691-012f-4b21-8e74-4acb3fd96019",
+  "victim_kb": "b9566297-5a42-461f-ad68-5743d3b821f5",
+  "probes": {
+    "D1a_collection_by_kb_id": {
+      "status": 200,
+      "leak_O_prompt": false,
+      "leak_O_out": false,
+      "answer_excerpt": "Answer from provided context. Markers seen: NO_MARKERS",
+      "LEAK": false
+    },
+    "D1b_file_by_id": {
+      "status": 200,
+      "leak_O_prompt": true,
+      "leak_O_out": true,
+      "answer_excerpt": "Answer from provided context. Markers seen: DERIVEDZEBRA42",
+      "LEAK": true
+    },
+    "D1c_raw_collection_name": {
+      "status": 200,
+      "leak_O_prompt": false,
+      "leak_O_out": false,
+      "answer_excerpt": "Answer from provided context. Markers seen: NO_MARKERS",
+      "LEAK": false
+    },
+    "D2_residue_after_delete_via_rawcollection": {
+      "status": 200,
+      "leak_O_prompt": false,
+      "leak_O_out": false,
+      "answer_excerpt": "Answer from provided context. Markers seen: NO_MARKERS",
+      "LEAK": false
+    },
+    "D2_residue_attacker_rawcollection": {
+      "status": 200,
+      "leak_O_prompt": false,
+      "leak_O_out": false,
+      "answer_excerpt": "Answer from provided context. Markers seen: NO_MARKERS",
+      "LEAK": false
+    }
+  },
+  "delete_status": 200,
+  "summary": {
+    "any_derived_leak": true,
+    "leaking_probes": [
+      "D1b_file_by_id"
+    ]
+  }
+}
