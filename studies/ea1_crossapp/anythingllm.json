@@ -1,0 +1,86 @@
+{
+  "app": "anythingllm@anythingllm-latest",
+  "n_checks": 13,
+  "n_fail": 0,
+  "checks": [
+    {
+      "id": "S1.A.scoped",
+      "scenario": "basic",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "id": "S1.A.library",
+      "scenario": "basic",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "id": "S2.A",
+      "scenario": "cross_ask",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "id": "S1.B.scoped",
+      "scenario": "basic",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "id": "S1.B.library",
+      "scenario": "basic",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "id": "S2.B",
+      "scenario": "cross_ask",
+      "status": "PASS",
+      "detail": "[]"
+    },
+    {
+      "id": "S5.ws.get",
+      "scenario": "foreign_ids",
+      "status": "PASS",
+      "detail": "{'status': 200, 'hard_deny': False, 'tokens': []}"
+    },
+    {
+      "id": "S5.ws.chats",
+      "scenario": "foreign_ids",
+      "status": "PASS",
+      "detail": "{'status': 400, 'hard_deny': True, 'tokens': []}"
+    },
+    {
+      "id": "S5.ws.chat",
+      "scenario": "foreign_ids",
+      "status": "PASS",
+      "detail": "{'status': 404, 'hard_deny': True, 'tokens': []}"
+    },
+    {
+      "id": "S4.B.delete",
+      "scenario": "delete_reupload",
+      "status": "PASS",
+      "detail": "200"
+    },
+    {
+      "id": "S4.A.no_stale",
+      "scenario": "delete_reupload",
+      "status": "PASS",
+      "detail": "{'reused_id': False, 'tokens': []}"
+    },
+    {
+      "id": "S3.C.fresh_generation",
+      "scenario": "same_file",
+      "status": "PASS",
+      "detail": "no LLM call attributed to C (served from a shared cache?)"
+    },
+    {
+      "id": "P.prompt_audit",
+      "scenario": "prompt",
+      "status": "PASS",
+      "detail": "[]"
+    }
+  ],
+  "findings": []
+}

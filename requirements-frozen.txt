@@ -1,0 +1,12 @@
+# Model-side versions. Two production states exist:
+#   * Sprint 1/2 frozen build 5f54ff9 (the 80-question numbers) — check sprint1_delivery/requirements
+#   * backend 2026-10-12 (isolation-final): sentence-transformers==6.1.0, rank-bm25==0.2.2
+# Record the exact versions in every run-file header (pip freeze > results/<name>/env.txt).
+numpy
+pyyaml
+rank-bm25==0.2.2
+sentence-transformers==6.1.0
+torch            # CPU wheel: pip install torch --index-url https://download.pytorch.org/whl/cpu
+pypdf
+chromadb         # only to read the Sprint 1 chroma_data/ index
+datasets         # SQuAD 2.0 via Hugging Face (fallback)

@@ -1,0 +1,14 @@
+item_id,coder1_class,coder1_note
+I01,D5,caller-supplied file id attached without ownership check (route-level object authz)
+I02,D5,delete keyed by integer PK, no owner scope (route-level object authz)
+I03,D5,delete by conversation id, no ownership check
+I04,D5,document get by id, no ownership/KB-membership check
+I05,D5,body-supplied userId overrides authenticated id (client-asserted identity)
+I06,D5,conversation functions act on supplied id without ownership check
+I07,D5,missing authorization: first user can act on admin chats
+I08,D5,incorrect authorization: data id not bound to caller's chat/collection
+I09,D5,authorization flaw in conversation sharing
+I10,D5,prompt endpoints missing ownership validation
+I11,D1,derived retrieval path serves foreign file content keyed without owner (direct API denies)
+I12,D2,deleted document's derived vector entries not purged; still retrievable cross-user
+I13,D1,"boundary D1/D3: route-level id manip poisons another tenant's derived index (write)"

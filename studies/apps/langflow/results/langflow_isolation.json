@@ -1,0 +1,28 @@
+{
+  "app": "langflow",
+  "version": "1.13.0",
+  "probes": {
+    "B_reads_A_flow_by_id": {
+      "status": 404,
+      "leak_O_out": false,
+      "authz_2xx": false,
+      "excerpt": "{\"detail\": \"Flow not found\"}"
+    },
+    "B_flow_list": {
+      "status": 200,
+      "leak_O_out": false,
+      "authz_2xx": true,
+      "excerpt": "[]"
+    }
+  },
+  "create_flow_status": 201,
+  "flow_id": "2f08ee87-b93b-4b9c-9526-01490b16b3c5",
+  "control_A_reads_own": {
+    "status": 200,
+    "has_canary": true
+  },
+  "summary": {
+    "any_cross_user_leak": false,
+    "leaking_probes": []
+  }
+}
