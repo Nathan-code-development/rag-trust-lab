@@ -1,6 +1,6 @@
 # rag-trust-lab 
 
-![reproduce](https://github.com/Nathan-code-development/rag-trust-lab/actions/workflows/reproduce.yml/badge.svg)
+[![DOI](https://zenodo.org/badge/1446019578.svg)](https://doi.org/10.5281/zenodo.23960611)
 
 Research artifact for the paper **"Isolated at the Route, Leaking Below: Detecting Derived-State
 Tenant Isolation Failures in Multi-Tenant RAG Applications"** (IEEE ISSRE submission).
