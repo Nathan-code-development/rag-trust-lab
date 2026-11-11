@@ -1,13 +1,13 @@
 # rag-trust-lab
 
 Research artifact for the paper **"Isolated at the Route, Leaking Below: Detecting Derived-State
-Tenant Isolation Failures in Multi-Tenant RAG Applications"** (IEEE ISSRE submission).
+Tenant Isolation Failures in Multi-Tenant RAG Applications"**.
 
 It contains the **canary-echo** differential testing method for tenant isolation in retrieval-
 augmented generation (RAG) applications, and everything needed to reproduce the paper's claims:
 the cross-application study (RQ1), the public-CVE study (RQ2), and the seeded-fault evaluation (RQ3).
 
-## ✅ Reproduce (reviewers start here)
+## ✅ Reproduce (start here)
 
 **Every deterministic number in the paper** is self-checked by one command:
 

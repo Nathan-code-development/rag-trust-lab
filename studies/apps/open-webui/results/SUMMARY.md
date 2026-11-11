@@ -31,7 +31,7 @@ inconsistent. This is precisely the paper's thesis.
 **Code:** `retrieval/utils.py: get_sources_from_items` checks ownership for `note`/`chat` items but
 not for items carrying a file/collection (0.8.11). 0.12.5 is fixed (the same path tests negative).
 
-## Methodological significance (for the ISSRE paper)
+## Methodological significance (for the paper)
 
 1. **The tool detects a real cross-user derived-layer leak** (D1b on 0.8.11) — positive validation.
 2. **No false positive on the fixed version (0.12.5)** — negative control; and the self-check proves

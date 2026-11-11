@@ -152,9 +152,9 @@ toggles (fault on → detected/leaks; clean config → no leak). No separate com
 
 ---
 
-## 7. For an ISSRE artifact-track submission (if you pursue a badge)
+## 7. Artifact-evaluation checklist
 
-The ISSRE Call for Artifacts asks for a few extra items beyond this repository:
+Typical artifact-evaluation calls ask for a few extra items beyond this repository:
 - a **`README.txt`** (plain-text) with: target category, target badge, paper info, expected
   behaviour, artifact description, environment setup, getting started, and reproducibility. This
   `README.md` + `REPRODUCE.md` already contain all of that content; copy it into a `README.txt` for

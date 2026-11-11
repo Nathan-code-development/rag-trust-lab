@@ -1,10 +1,10 @@
 ================================================================================
-ISSRE 2026 ARTIFACT  -  README
+RESEARCH ARTIFACT  -  README
 Paper: "Isolated at the Route, Leaking Below: Detecting Derived-State Tenant
         Isolation Failures in Multi-Tenant RAG Applications"
 ================================================================================
 
-(This is the plain-text README requested by the ISSRE Call for Artifacts. The
+(This is a plain-text README for artifact evaluation. The
 same content, with formatting, is in README.md and REPRODUCE.md.)
 
 --------------------------------------------------------------------------------
@@ -34,9 +34,8 @@ Available + Reproducible.
 Title:         Isolated at the Route, Leaking Below: Detecting Derived-State
                Tenant Isolation Failures in Multi-Tenant RAG Applications
 Author:        Lisheng Ni (Independent Researcher), 1175235190@qq.com
-Submission ID: <fill in after submission>
 Repository:    https://github.com/Nathan-code-development/rag-trust-lab
-Archived DOI:  <fill in the Zenodo DOI after archiving>
+Archived DOI:  10.5281/zenodo.23960612
 
 --------------------------------------------------------------------------------
 4. EXPECTED BEHAVIOUR
