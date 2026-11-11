@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "ragtrust"
 version = "0.1.0"
 description = "canary-echo: differential testing for derived-state tenant isolation in multi-tenant RAG applications (ISSRE artifact)"
-authors = [{ name = "Lisheng Ni" }]
+authors = [{ name = "Anonymous Author(s)" }]
 requires-python = ">=3.10"
 dependencies = [
   "numpy>=1.24",

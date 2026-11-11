@@ -19,7 +19,7 @@ paper's quantitative results (RQ1, RQ2, RQ3).
 2. TARGET BADGE
 --------------------------------------------------------------------------------
 Available + Reproducible.
-  - Available:    public GitHub repository + archived snapshot with a DOI + MIT license.
+  - Available:    public repository + archived snapshot (after review) + MIT license.
   - Reproducible: every DETERMINISTIC number in the paper (RQ2 Cohen's kappa; all
                   of RQ3, incl. the 1000-trial robustness run) is regenerated and
                   checked against the printed value by one command, in < 1 minute,
@@ -33,10 +33,10 @@ Available + Reproducible.
 --------------------------------------------------------------------------------
 Title:         Isolated at the Route, Leaking Below: Detecting Derived-State
                Tenant Isolation Failures in Multi-Tenant RAG Applications
-Author:        Lisheng Ni (Independent Researcher), 1175235190@qq.com
+Author:        Anonymous Author(s) (anonymized for double-blind review)
 Submission ID: <fill in after submission>
-Repository:    https://github.com/Nathan-code-development/rag-trust-lab
-Archived DOI:  <fill in the Zenodo DOI after archiving>
+Repository:    (anonymized; see the link in the paper)
+Archived DOI:  (withheld for double-blind review)
 
 --------------------------------------------------------------------------------
 4. EXPECTED BEHAVIOUR
