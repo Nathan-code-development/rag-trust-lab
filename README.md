@@ -1,6 +1,4 @@
-# rag-trust-lab 
-
-[![DOI](https://zenodo.org/badge/1446019578.svg)](https://doi.org/10.5281/zenodo.23960611)
+# rag-trust-lab
 
 Research artifact for the paper **"Isolated at the Route, Leaking Below: Detecting Derived-State
 Tenant Isolation Failures in Multi-Tenant RAG Applications"** (IEEE ISSRE submission).
