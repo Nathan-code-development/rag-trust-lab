@@ -23,7 +23,7 @@ control for personal-document isolation. Needs 2 containers (khoj + pgvector). E
 
 ## Stage 0: prep (echo running, build an isolated network)
 ```bash
-cd /path/to/rag-trust-lab && source kit/prod_guard.sh
+cd /path/to/canary-echo-artifact && source kit/prod_guard.sh
 # echo running?
 curl -s http://127.0.0.1:8765/v1/models >/dev/null && echo "echo OK" || nohup python3 -m ragtrust.isolation.echo_server --port 8765 --log /tmp/echo_prompts.jsonl --dim 384 > /tmp/echo.log 2>&1 &
 # build an isolated network (the two containers talk internally, not exposed)
