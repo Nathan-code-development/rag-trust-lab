@@ -69,8 +69,6 @@ studies/apps/            per-application findings and recorded raw probe outputs
 scripts/                 reproduce_deterministic.py (one-command self-check).
 kit/                     cross-application test kit (adapters, echo launcher,
                          suite runner, runbooks for the RQ1 dynamic re-runs).
-paper/p1_isolation/      the paper (main.tex + compiled main.pdf, bundled IEEEtran).
-paper/refs.bib           references (no arXiv preprints).
 
 --------------------------------------------------------------------------------
 6. ENVIRONMENT SETUP
@@ -124,8 +122,6 @@ INTEGRITY NOTES
   output; every RQ2 CVE has a public advisory source in advisories.jsonl.
 - The kappa second annotator is an LLM, not a human expert (disclosed in the paper
   and in studies/ea2_history/kappa/README.md); human replication is future work.
-- paper/refs.bib contains no arXiv preprints; a few page/volume numbers are marked
-  approximate and should be checked against the publisher before camera-ready.
 
 License: MIT (see LICENSE).
 ================================================================================
