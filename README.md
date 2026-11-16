@@ -1,7 +1,7 @@
 # canary-echo-artifact
 
 Research artifact for the paper **"Isolated at the Route, Leaking Below: Detecting Derived-State
-Tenant Isolation Failures in Multi-Tenant RAG Applications"** (IEEE ISSRE submission).
+Tenant Isolation Failures in Multi-Tenant RAG Applications"**.
 
 It contains the **canary-echo** differential testing method for tenant isolation in retrieval-
 augmented generation (RAG) applications, and everything needed to reproduce the paper's claims:
