@@ -1,10 +1,10 @@
 ================================================================================
-ISSRE 2027 ARTIFACT  -  README
+RESEARCH 2027 ARTIFACT  -  README
 Paper: "Isolated at the Route, Leaking Below: Detecting Derived-State Tenant
         Isolation Failures in Multi-Tenant RAG Applications"
 ================================================================================
 
-(This is the plain-text README requested by the ISSRE Call for Artifacts. The
+(This is the plain-text README for artifact evaluation. The
 same content, with formatting, is in README.md and REPRODUCE.md.)
 
 --------------------------------------------------------------------------------
