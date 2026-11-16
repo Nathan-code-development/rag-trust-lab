@@ -1,5 +1,5 @@
 ================================================================================
-ISSRE 2026 ARTIFACT  -  README
+ISSRE 2027 ARTIFACT  -  README
 Paper: "Isolated at the Route, Leaking Below: Detecting Derived-State Tenant
         Isolation Failures in Multi-Tenant RAG Applications"
 ================================================================================
