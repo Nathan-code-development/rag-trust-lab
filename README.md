@@ -34,8 +34,6 @@ studies/ea3_seeded/       RQ3: seeded-fault evaluation (seeded_app.py, detectors
 studies/apps/             per-application findings and raw probe outputs (Open WebUI, Khoj, Kotaemon, LibreChat, LangFlow)
 scripts/                  reproduce_deterministic.py (one-command self-check of every deterministic number)
 kit/                      cross-application test kit: adapters, echo launcher, suite runner, runbooks (RQ1 re-run)
-paper/p1_isolation/       the paper (main.tex + compiled main.pdf), with bundled IEEEtran.cls/.bst
-paper/refs.bib            references (no arXiv preprints)
 ```
 
 ## Method in one paragraph
