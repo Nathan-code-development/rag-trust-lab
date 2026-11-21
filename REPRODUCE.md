@@ -50,10 +50,17 @@ Expected (writes `studies/ea3_seeded/results/ea3.{json,md}`):
 |---|---|---|---|---|---|---|---|
 | canary-echo (ours) | ✓ | ✓ | ✓ | ✓ | ✓ | **100%** | none |
 | IDOR scanner | · | · | · | · | ✓ | 20% | none |
+| content-diff (Autorize-style) | ✓ | · | · | · | ✓ | 40% | none |
 | static keying | ✓ | ✓ | ✓ | ✓ | · | 80% | none |
 
-Static keying additionally **false-positives on the guarded-but-owner-less store** (flags `D1`);
-canary-echo and IDOR do not. This is the paper's Table V plus its guarded-store precision claim.
+The **content-diff / Autorize-style** baseline is the *strong* fair baseline: it records a tenant's
+authorized response and replays the same id-bearing request as another tenant — on the direct-object
+route **and** on the chat/retrieval interface — flagging a leak when the replayed response reproduces
+the victim's private content (content comparison, not status codes; no canaries; single-request
+replays). It therefore recovers D1 (whose leak is a verbatim cross-user echo) but cannot reach the
+derived-state classes D2–D4. Static keying additionally **false-positives on the
+guarded-but-owner-less store** (flags `D1`); the other three detectors do not. This is the paper's
+Table V plus its guarded-store precision claim.
 
 ### Table VI — multi-seed robustness (N = 1000 randomized trials per class)
 ```bash
@@ -64,12 +71,25 @@ Expected (writes `studies/ea3_seeded/results/ea3_multiseed.{json,md}`), 5000 cla
 | Detector | D1 | D2 | D3 | D4 | D5 | Recall (Wilson 95% CI) | FP(guarded) |
 |---|---|---|---|---|---|---|---|
 | canary-echo (ours) | 99 | 99 | 98 | 100 | 100 | **99.3%  [99.0, 99.5]**  (4965/5000) | 0% |
-| IDOR scanner | 0 | 0 | 0 | 0 | 100 | 20.0%  [18.9, 21.1] | 0% |
-| static keying | 100 | 100 | 100 | 100 | 0 | 80.0%  [78.9, 81.1] | 100% |
+| IDOR scanner† | 0 | 0 | 0 | 0 | 100 | 20.0% | 0% |
+| content-diff (Autorize-style) | 99 | 0 | 0 | 0 | 100 | 39.8%  [38.5, 41.2]  (1991/5000) | 0% |
+| static keying† | 100 | 100 | 100 | 100 | 0 | 80.0% | 100%† |
 
 FP on the clean app is 0% for all detectors. Each trial draws a fresh realization of the fault
 (canary tokens, document content, benign document, worker count 2–4). **Seed derivation is fully
 deterministic** (`base = t*1_000_003 + ci*7919`; no `hash()`), so the numbers above are exact.
+
+**† Coverage-determined, not stochastic.** The IDOR scanner deterministically detects exactly D5 and
+static keying exactly D1–D4 on *every* trial: their verdict depends on the fault's structure, not on
+the randomized content, so their percentages report *which classes the technique can see in
+principle* (a binomial CI would describe only the fixed 1-of-5 / 4-of-5 class mix, not the detector)
+and static keying's 100% guarded-store FP is **one structural case** — it cannot see a runtime guard —
+repeated identically across all 1000 trials, not 1000 independent discoveries. Genuine trial-to-trial
+variation exists only where a verdict depends on whether randomized retrieval surfaces the planted
+marker: canary-echo on D1–D3 and the content-diff baseline on D1 — hence a CI is reported only for
+those. On D1 the content-diff baseline is as accurate as canary-echo (99.1%) and equally precise (0%
+guarded FP); the entire 99.3-vs-39.8 gap is D2–D4, the classes that need canary attribution and the
+stateful / artifact-level probes a replay-and-diff tool does not issue.
 
 > Mutation/fault-injection framing for RQ3 follows standard practice (cited in the paper as
 > Jia & Harman, *IEEE TSE* 2011).

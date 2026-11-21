@@ -8,6 +8,7 @@ Each trial: fresh canary tokens + randomized document content (section count, ma
 |---|---|---|---|---|---|
 | canary_echo(ours) | 99% | 99% | 98% | 100% | 100% |
 | idor_baseline | 0% | 0% | 0% | 0% | 100% |
+| autorize_baseline | 99% | 0% | 0% | 0% | 100% |
 | static_keying | 100% | 100% | 100% | 100% | 0% |
 
 ## Aggregate recall over 5 classes x N trials (Wilson 95% CI)
@@ -16,6 +17,7 @@ Each trial: fresh canary tokens + randomized document content (section count, ma
 |---|---|---|---|
 | canary_echo(ours) | 99.3% | [99.0%, 99.5%] | 4965/5000 |
 | idor_baseline | 20.0% | [18.9%, 21.1%] | 1000/5000 |
+| autorize_baseline | 39.8% | [38.5%, 41.2%] | 1991/5000 |
 | static_keying | 80.0% | [78.9%, 81.1%] | 4000/5000 |
 
 ## False-positive rate
@@ -24,10 +26,12 @@ Each trial: fresh canary tokens + randomized document content (section count, ma
 |---|---|---|
 | canary_echo(ours) | 0.0% | 0.0% |
 | idor_baseline | 0.0% | 0.0% |
+| autorize_baseline | 0.0% | 0.0% |
 | static_keying | 0.0% | 100.0% |
 
 ## Over-flagging (trials flagging any class beyond the seeded one)
 
 - canary_echo(ours): 0 / 5000 class-trials
 - idor_baseline: 0 / 5000 class-trials
+- autorize_baseline: 0 / 5000 class-trials
 - static_keying: 0 / 5000 class-trials

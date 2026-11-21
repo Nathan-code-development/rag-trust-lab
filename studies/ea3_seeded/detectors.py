@@ -6,6 +6,12 @@ M1 canary_echo (ours): plant per-tenant canaries, run dynamic probes over BOTH
    oracle fires. Confirms exploitability.
 M2 idor_baseline      : route-level BOLA/IDOR scanner — substitutes a victim id /
    tampers a body user id on DIRECT OBJECT endpoints only.
+M4 autorize_baseline  : content-comparison cross-user scanner (Burp "Autorize" style) —
+   replays a tenant's id-bearing request as another tenant on BOTH the object
+   route and the chat/retrieval path, and flags a leak when the replayed response
+   reproduces the victim's private content. Compares CONTENT not status, reaches the
+   retrieval path (unlike M2), but plants no canaries and does only single-request
+   replays, so it catches D1+D5 and misses the derived-state classes D2/D3/D4.
 M3 static_keying      : keying linter — inspects derived_keys(); flags owner-less
    keys / missing build guards. No runtime-authz signal (cannot see D5); cannot
    confirm exploitability.
@@ -137,6 +143,53 @@ def idor_baseline(app: SeededApp, reg: CanaryRegistry, rng: Optional[random.Rand
     return flagged
 
 
+# ----------------------------------------------------- M4 Autorize-style baseline
+
+def autorize_baseline(app: SeededApp, reg: CanaryRegistry, rng: Optional[random.Random] = None) -> Set[str]:
+    """A content-comparison BOLA tool in the style of Burp Suite's *Autorize*.
+
+    It plants NO canaries and issues NO multi-step maneuvers. For a resource
+    owned by victim V it (i) records V's own authorized response as the private
+    reference body, then (ii) REPLAYS the same id-bearing request as attacker A
+    --- on the direct-object route AND on the chat/retrieval interface --- and
+    flags a violation when A's replayed response reproduces V's private content.
+    It therefore compares response CONTENT (not status codes) and reaches the
+    retrieval path, which the route-level IDOR scanner does not. Because it has
+    no canary attribution and performs only single-request cross-user replays, it
+    cannot reach leaks that require a stateful attacker maneuver (id reuse against
+    a stale per-worker index; contaminating an orphan cache) or a content-hash
+    existence oracle (content-addressed generation sharing)."""
+    flagged: Set[str] = set()
+    cv = reg.mint("V", resource="docV")
+    note = _note(cv, rng)
+    Q = "secret marker"
+    rid = app.upload("V", note)
+
+    # (i) V's own authorized responses -- the private reference bodies a
+    #     cross-user differ compares against. V's distinctive private content is
+    #     the marker string cv, which appears in V's authorized body.
+    _st_v, _body_v = app.get_object("V", rid)
+    v_private = cv
+
+    def reproduces_v(resp) -> bool:
+        """Content comparison: does A's replayed response reproduce V's private
+        content? (A has no legitimate copy of V's document.)"""
+        return v_private in str(resp)
+
+    # (ii) replay V's requests as attacker A, compare content ------------------
+    # direct-object route (D5):
+    st, body = app.get_object("A", rid)
+    if 200 <= st < 300 and reproduces_v(body):
+        flagged.add("D5")
+    # object-scoped ask with a tampered body user id (D5):
+    if reproduces_v(app.ask("A", Q, rid, body_user_id="V")):
+        flagged.add("D5")
+    # chat/retrieval interface: substitute V's id into the reference path (D1):
+    if reproduces_v(app.ask_referencing("A", rid, Q)):
+        flagged.add("D1")
+    return flagged
+
+
 # --------------------------------------------------------------- M3 static
 
 def static_keying(app: SeededApp, reg: CanaryRegistry = None, rng: Optional[random.Random] = None) -> Set[str]:
@@ -154,4 +207,5 @@ def static_keying(app: SeededApp, reg: CanaryRegistry = None, rng: Optional[rand
     return flagged
 
 
-DETECTORS = {"canary_echo(ours)": canary_echo, "idor_baseline": idor_baseline, "static_keying": static_keying}
+DETECTORS = {"canary_echo(ours)": canary_echo, "idor_baseline": idor_baseline,
+             "autorize_baseline": autorize_baseline, "static_keying": static_keying}

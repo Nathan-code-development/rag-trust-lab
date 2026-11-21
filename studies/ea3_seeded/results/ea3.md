@@ -6,16 +6,19 @@ Detection matrix (check = class detected; dot = missed):
 |---|---|---|---|---|---|---|---|
 | canary_echo(ours) | ✓ | ✓ | ✓ | ✓ | ✓ | 100% | none |
 | idor_baseline | · | · | · | · | ✓ | 20% | none |
+| autorize_baseline | ✓ | · | · | · | ✓ | 40% | none |
 | static_keying | ✓ | ✓ | ✓ | ✓ | · | 80% | none |
 
 Precision: who false-positives on the owner-less-but-runtime-guarded (safe) case:
 
 - canary_echo(ours): none (correct)
 - idor_baseline: none (correct)
+- autorize_baseline: none (correct)
 - static_keying: D1 (false positive)
 
 Over-flagging (classes flagged beyond the seeded one):
 
 - canary_echo(ours): none
 - idor_baseline: none
+- autorize_baseline: none
 - static_keying: none
