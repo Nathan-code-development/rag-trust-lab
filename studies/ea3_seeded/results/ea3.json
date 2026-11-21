@@ -18,11 +18,15 @@
   "flagged": {
     "clean|canary_echo(ours)": [],
     "clean|idor_baseline": [],
+    "clean|autorize_baseline": [],
     "clean|static_keying": [],
     "D1|canary_echo(ours)": [
       "D1"
     ],
     "D1|idor_baseline": [],
+    "D1|autorize_baseline": [
+      "D1"
+    ],
     "D1|static_keying": [
       "D1"
     ],
@@ -30,6 +34,7 @@
       "D2"
     ],
     "D2|idor_baseline": [],
+    "D2|autorize_baseline": [],
     "D2|static_keying": [
       "D2"
     ],
@@ -37,6 +42,7 @@
       "D3"
     ],
     "D3|idor_baseline": [],
+    "D3|autorize_baseline": [],
     "D3|static_keying": [
       "D3"
     ],
@@ -44,6 +50,7 @@
       "D4"
     ],
     "D4|idor_baseline": [],
+    "D4|autorize_baseline": [],
     "D4|static_keying": [
       "D4"
     ],
@@ -53,9 +60,13 @@
     "D5|idor_baseline": [
       "D5"
     ],
+    "D5|autorize_baseline": [
+      "D5"
+    ],
     "D5|static_keying": [],
     "guarded_ownerless|canary_echo(ours)": [],
     "guarded_ownerless|idor_baseline": [],
+    "guarded_ownerless|autorize_baseline": [],
     "guarded_ownerless|static_keying": [
       "D1"
     ]
@@ -75,6 +86,13 @@
       "D4": false,
       "D5": true
     },
+    "autorize_baseline": {
+      "D1": true,
+      "D2": false,
+      "D3": false,
+      "D4": false,
+      "D5": true
+    },
     "static_keying": {
       "D1": true,
       "D2": true,
@@ -86,6 +104,7 @@
   "false_positives_clean": {
     "canary_echo(ours)": [],
     "idor_baseline": [],
+    "autorize_baseline": [],
     "static_keying": []
   },
   "overflag": {
@@ -103,6 +122,13 @@
       "D4": [],
       "D5": []
     },
+    "autorize_baseline": {
+      "D1": [],
+      "D2": [],
+      "D3": [],
+      "D4": [],
+      "D5": []
+    },
     "static_keying": {
       "D1": [],
       "D2": [],
@@ -114,6 +140,7 @@
   "recall_rate": {
     "canary_echo(ours)": 1.0,
     "idor_baseline": 0.2,
+    "autorize_baseline": 0.4,
     "static_keying": 0.8
   }
 }

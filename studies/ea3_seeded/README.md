@@ -1,89 +1,84 @@
-# RQ3: Seeded-fault evaluation (method effectiveness)
+# E-A3:植入漏洞评估(方法有效性)
 
-**Question (paper RQ3):** compared with two common techniques, how much more does our canary-echo
-method find, and at what cost?
-- **M1 canary-echo (ours):** plant canaries, probe both the object API and the retrieval/derived
-  path dynamically, decide with the canary oracle, and confirm exploitability.
-- **M2 IDOR baseline:** route-level BOLA/IDOR scanning — substitute a victim id / tamper the body
-  user id on direct-object endpoints only.
-- **M3 static key analysis:** a keying linter — inspect whether derived stores are keyed without an
-  owner / without a build guard; reports code smells only, does not confirm exploitability.
+**问题(论文 RQ3)**:我们的 canary-echo 方法相比三种基线,能多发现什么、代价如何?
+- **M1 canary-echo(我们的)**:植入 canary,对对象 API 和检索/派生路径都做动态探测,canary oracle 判定,确认可利用性。
+- **M2 IDOR 基线**:路由层 BOLA/IDOR 扫描——只在直接对象端点上替换受害者 id / 篡改 body 用户 id。
+- **M4 内容比对基线(Autorize 风格,*强*基线)**:不植入 canary。记录受害者自己的授权响应,再以攻击者身份
+  **重放**同一个带 id 的请求——对直接对象路由 **和** chat/检索接口都做——当重放响应复现受害者私有内容时判为泄漏。
+  它比对**内容**(而非状态码)、且探测 IDOR 基线够不到的检索路径,但不植 canary、只做单请求重放。
+- **M3 静态 key 检查**:key 规约 linter——检查派生存储的键是否缺 owner / 缺 build 守卫;只报代码气味,不确认可利用性。
 
-**Method:** a controlled multi-tenant RAG application into which one fault per class can be injected
-(`seeded_app.py`); each class (D1–D5) has its own mechanism and its own derived store, and the
-mechanisms mirror real cases (D1 = Open WebUI D1b; D2/D3/D4 = AI Study Companion B2/B1/B3; D5 =
-classic BOLA). For clean + each class seeded alone + one "owner-less but guarded by a runtime check
-(safe)" configuration, each of the three detectors is run once on a fresh instance.
-`python run_ea3.py`; results in `results/ea3.json` / `ea3.md`.
+**方法**:一个可逐类注入漏洞的受控多租户 RAG 应用(`seeded_app.py`),每类(D1–D5)有独立机制与独立派生存储,
+机制对标真实案例(D1=Open WebUI D1b;D2/D3/D4=AI Study Companion B2/B1/B3;D5=经典 BOLA)。
+对 clean + 每类单独注入 + 一个"owner-less 但有运行时防护(安全)"情形,三种方法各跑一遍(全新实例)。
+`python run_ea3.py`,结果见 `results/ea3.json` / `ea3.md`。
 
-## Results (canonical single-fault run)
+## 结果
 
-**Detection (is the class detected when it is the sole seeded fault)**
+**检出率(注入某类时能否检出)**
 
-| Method | D1 | D2 | D3 | D4 | D5 | Recall | FP (clean) |
+| 方法 | D1 | D2 | D3 | D4 | D5 | 检出率 | clean 误报 |
 |---|---|---|---|---|---|---|---|
-| **canary-echo (ours)** | ✓ | ✓ | ✓ | ✓ | ✓ | **100%** | none |
-| IDOR baseline | · | · | · | · | ✓ | 20% | none |
-| static keying | ✓ | ✓ | ✓ | ✓ | · | 80% | none |
+| **canary-echo(我们的)** | ✓ | ✓ | ✓ | ✓ | ✓ | **100%** | 无 |
+| IDOR 基线 | · | · | · | · | ✓ | 20% | 无 |
+| 内容比对(Autorize 风格) | ✓ | · | · | · | ✓ | 40% | 无 |
+| 静态 key 检查 | ✓ | ✓ | ✓ | ✓ | · | 80% | 无 |
 
-**Precision (on the owner-less-but-runtime-guarded, i.e. safe, configuration)**
+**精度(对 owner-less 但有运行时防护的安全情形)**
 
-| Method | False positive? |
+| 方法 | 是否误报 |
 |---|---|
-| canary-echo (ours) | no (correct — dynamically confirms no leak) |
-| IDOR baseline | no |
-| static keying | **false-positives D1** (cannot distinguish a guarded safe key from a real bug) |
+| canary-echo(我们的) | 不报(正确——动态确认无泄漏) |
+| IDOR 基线 | 不报 |
+| 内容比对(Autorize 风格) | 不报(运行时防护拦住重放,正确) |
+| 静态 key 检查 | **误报 D1**(无法区分"有防护的安全键"和"真漏洞") |
 
-## Takeaways (for the paper)
+## 结论(论文用)
 
-1. **The IDOR baseline is completely blind to the derived layer.** It detects only the route-level
-   D5 and misses all derived-layer classes D1–D4. This quantifies why the public CVE record (RQ2:
-   10/10 are D5) systematically lacks derived-layer leaks — ordinary authorization scanning simply
-   cannot test that side.
-2. **Static key analysis misses runtime authorization (D5) and lacks precision.** It finds keying
-   defects (D1–D4) but has no signal for D5; and it false-positives on the "owner-less but runtime-
-   guarded" safe configuration, unable to confirm exploitability.
-3. **Only canary-echo covers both the derived and the route layer (100% detection, 0 FP) and
-   dynamically confirms exploitability.** The three are complementary, but only our method yields
-   directly reproducible, disclosable evidence.
+1. **IDOR 基线对派生层完全失明。** 只检出路由层 D5,漏掉全部派生数据层 D1–D4。这量化地解释了
+   为什么公开 CVE 记录(E-A2:10/10 都是 D5)系统性缺失派生层泄漏——常规越权扫描根本测不到那一面。
+2. **即便是*强*基线(Autorize 风格内容比对)也只到 40%。** 把它指向检索接口、比对响应内容后,它能
+   补回 D1(泄漏表现为可被单次重放直接复现的跨租户回显),且在 D1 上与 canary-echo 同样准确
+   (99.1%)、同样精确(guarded 上 0 误报);但 D2–D4 对单次重放不暴露任何可复用的外租户回显——
+   D2 需"删除并复用 id"、D3 需污染并读取随发缓存、D4 是对内容哈希的存在性预言机——这三类都需要
+   **per-tenant canary 归因**与有状态/制品级探测,重放-比对工具做不到。99.3→39.8 的整段差距正是 D2–D4。
+3. **静态 key 检查漏掉运行时授权(D5),且精度不足。** 它能发现键规约缺陷(D1–D4),但对 D5 无信号;
+   且对"owner-less 但有运行时防护"的安全情形误报,无法确认可利用性。
+4. **只有 canary-echo 同时覆盖派生层与路由层(100% 检出、0 误报)并动态确认可利用性。** 四者互补,
+   但只有我们的方法给出可直接复现、可披露的证据。
 
-## Real-application corroboration
+## 真实应用佐证
 
-The controlled conclusion matches real applications: on Open WebUI 0.8.11, the route-level scenario
-S5 (= the IDOR baseline's capability) all PASS, while the derived-layer scenarios **S7 (D1b) and S8
-(delete-residue) FAIL** — exactly the "invisible to IDOR scanning, found only by canary-echo"
-real-world instance (see `../apps/open-webui/`).
+受控结论与真实应用一致:在 Open WebUI 0.8.11 上,路由层场景 S5(= IDOR 基线能力)全部 PASS,
+而派生层场景 **S7(D1b)和 S8(删除残留)FAIL**——正是"IDOR 扫描看不到、canary-echo 才能发现"
+的真实实例(见 `../apps/open-webui/`)。
 
-## Notes and limitations
-- The controlled application is a minimal abstraction of real mechanisms; each class mechanism is
-  mapped to a concrete real case but does not replace validation on real applications (hence RQ1).
-- D6 (client-side storage) is browser-side and not included in this server-side evaluation; it is
-  listed separately (it needs a client oracle).
-- Static key analysis is implemented as a specification check over `derived_keys()`, a conservative
-  proxy for a real key-linter; stronger static analysis (full authorization dataflow) might narrow
-  the gap, but that is beyond a "lightweight linter" and still cannot confirm exploitability.
+## 说明与局限
+- 受控应用是对真实机制的最小化抽象;每类机制已对标具体的真实案例,但不替代真实应用上的验证(故配合 E-A1)。
+- D6(客户端存储)是浏览器侧,本服务器侧评估未纳入,单列(需客户端 oracle)。
+- 静态 key 检查实现为对 `derived_keys()` 的规约检查,是对真实 key-linter 的保守代理;更强的静态分析
+  (完整授权数据流)可能缩小差距,但那已超出"轻量 linter"范畴,且仍无法确认可利用性。
 
-## Multi-seed robustness (added 2026-11-05; answers the REG statistical-power concern)
+## 多种子鲁棒性(2026-11-05 新增,回应 REG 统计效力质疑)
 
-`run_ea3_multiseed.py`: each configuration runs **N=1000 independent randomized trials** (each trial:
-fresh canary tokens + randomized document content [section count, marker positions, vocabulary] +
-randomized benign document + randomized worker count 2–4), using the same real detectors. That is
-5000 class-trials per detector. Output: `results/ea3_multiseed.{json,md}`.
+`run_ea3_multiseed.py`:每个配置跑 **N=1000 个独立随机化试验**(每试验:新金丝雀 token +
+随机化文档内容[段数/标记位置/词表] + 随机化 benign 文档 + 随机 worker 数 2–4),同一套真实
+检测器。每检测器共 5000 个类-试验。输出 `results/ea3_multiseed.{json,md}`。
 
-Results (N=1000, Wilson 95% CI):
-- **canary-echo (ours): aggregate recall 99.3% [99.0%, 99.5%]** (4965/5000); per-class D1 99%,
-  D2 99%, D3 98%, D4 100%, D5 100%; 0% false positives on both clean and guarded. The few misses are
-  confined to D2/D3 and are **probe-coverage** edges (a finite probe budget occasionally not
-  scheduling a query onto the worker holding the stale index, or an adversarial random document not
-  ranking the contaminated chunk into the top-k) — **not an oracle error** (the content oracle never
-  fired on content that had not crossed tenants).
-- IDOR baseline: 20.0% [18.9%, 21.1%] (D5 only).
-- static keying: 80.0% [78.9%, 81.1%] (misses D5), **100% false positives** on the guarded store.
+结果(N=1000,Wilson 95% CI):
+- canary_echo(ours):**聚合召回 99.3% [99.0%, 99.5%]**(4965/5000);逐类 D1=99.1%、D2=98.9%、
+  D3=98.5%、D4/D5=100%;clean 与 guarded 均 0% 误报。少数漏检集中在 D2/D3,属**探测覆盖**边缘
+  (固定探测预算偶未命中持有陈旧索引的 worker,或对抗性随机文档下污染块未进 top-k),**非预言机误报**
+  (内容预言机从未在"未跨租户"的内容上触发)。
+- autorize_baseline(内容比对强基线):**39.8% [38.5%, 41.2%]**(1991/5000);逐类 D1=99.1%、D5=100%、
+  D2/D3/D4=0%;clean 与 guarded 均 0% 误报。
+- idor_baseline:20.0%(仅 D5)。
+- static_keying:80.0%(漏 D5),guarded 上 **100% 误报**。
 
-The three CIs do not overlap → the differences between methods are not noise. The canonical
-single-seed result of `run_ea3.py` (100/20/80) is unchanged (the document generators reproduce the
-original fixed documents when `rng=None`).
-
-**Determinism:** the seed derivation is `base = t*1_000_003 + ci*7919` (no Python `hash()`), so the
-numbers above are exact and independent of `PYTHONHASHSEED`. Verify every number with
-`python ../../scripts/reproduce_deterministic.py`.
+**统计口径(诚实说明)**:IDOR 与静态 key 两个基线是**覆盖决定型(coverage-determined)**而非随机型——
+它们每一试验都确定性地分别检出 D5 / D1–D4,取决于漏洞**结构**而非随机内容;故其百分比报告的是
+"该技术原则上能看到哪些类",对其套 Wilson CI 只反映固定的 1/5、4/5 类占比,而非检测器方差;静态 key
+在 guarded 上的 100% 误报是**同一个结构性情形**(看不到运行时防护)在 1000 次里的重复,而非 1000 次独立
+发现。真正的试验间随机性只出现在"判定取决于随机检索是否命中植入标记"的格子:canary-echo 的 D1–D3 与
+内容比对基线的 D1——因此只对这些格子报 CI。`run_ea3.py` 的单种子规范结果(100/20/40/80)不变
+(doc 生成器在 rng=None 时复现原固定文档)。

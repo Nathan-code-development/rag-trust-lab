@@ -9,8 +9,8 @@ Prints a PASS/FAIL table and exits non-zero if anything disagrees.
 
 Covered (fully reproducible, seed-fixed, independent of PYTHONHASHSEED and of any
 external service, model, GPU or API key):
-  * RQ3 Table V  (canonical single-fault): recall 100% / 20% / 80%, static FP on guarded store
-  * RQ3 Table VI (multi-seed, N=1000):     canary-echo 99.3% [99.0,99.5]; baselines 20.0% / 80.0%
+  * RQ3 Table V  (canonical single-fault): recall 100% / 20% / 40% / 80%, static FP on guarded store
+  * RQ3 Table VI (multi-seed, N=1000):     canary-echo 99.3% [99.0,99.5]; baselines 20.0% / 39.8% / 80.0%
   * RQ2 kappa:                             Cohen's kappa = 0.458, agreement 11/13
 
 RQ1 (cross-application dynamic/source findings) is NOT deterministic from this repo
@@ -52,7 +52,10 @@ def main():
     rr = d["recall_rate"]
     chk("RQ3-V canary-echo recall", "1.0", rr["canary_echo(ours)"], approx(rr["canary_echo(ours)"], 1.0))
     chk("RQ3-V IDOR recall", "0.2", rr["idor_baseline"], approx(rr["idor_baseline"], 0.2))
+    chk("RQ3-V autorize recall", "0.4", rr["autorize_baseline"], approx(rr["autorize_baseline"], 0.4))
     chk("RQ3-V static recall", "0.8", rr["static_keying"], approx(rr["static_keying"], 0.8))
+    guard_autorize = d["flagged"].get("guarded_ownerless|autorize_baseline", [])
+    chk("RQ3-V autorize FP on guarded = []", "[]", guard_autorize, guard_autorize == [])
     guard_static = d["flagged"].get("guarded_ownerless|static_keying", [])
     chk("RQ3-V static FP on guarded = [D1]", "['D1']", guard_static, guard_static == ["D1"])
     guard_ours = d["flagged"].get("guarded_ownerless|canary_echo(ours)", [])
@@ -68,7 +71,14 @@ def main():
     chk("RQ3-VI canary-echo CI high", "0.995", round(o["ci95"][1], 3), approx(o["ci95"][1], 0.995, 0.001))
     chk("RQ3-VI canary-echo k/n", "4965/5000", f'{o["k"]}/{o["n"]}', o["k"] == 4965 and o["n"] == 5000)
     chk("RQ3-VI IDOR recall", "0.20", round(agg["idor_baseline"]["recall"], 3), approx(agg["idor_baseline"]["recall"], 0.2))
+    a = agg["autorize_baseline"]
+    chk("RQ3-VI autorize recall", "0.398", round(a["recall"], 3), approx(a["recall"], 0.398))
+    chk("RQ3-VI autorize k/n", "1991/5000", f'{a["k"]}/{a["n"]}', a["k"] == 1991 and a["n"] == 5000)
     chk("RQ3-VI static recall", "0.80", round(agg["static_keying"]["recall"], 3), approx(agg["static_keying"]["recall"], 0.8))
+    pca = m["per_class_detection_rate"]["autorize_baseline"]
+    exp_pca = {"D1": 0.991, "D2": 0.0, "D3": 0.0, "D4": 0.0, "D5": 1.0}
+    chk("RQ3-VI autorize per-class", str(exp_pca), {k: round(v, 3) for k, v in pca.items()},
+        all(approx(pca[c], exp_pca[c]) for c in exp_pca))
     pc = m["per_class_detection_rate"]["canary_echo(ours)"]
     exp_pc = {"D1": 0.991, "D2": 0.989, "D3": 0.985, "D4": 1.0, "D5": 1.0}
     pc_ok = all(approx(pc[c], exp_pc[c]) for c in exp_pc)
@@ -76,6 +86,7 @@ def main():
     fpg = m["false_positive_rate"]["guarded_ownerless_D1"]
     chk("RQ3-VI static FP_guarded", "1.0", fpg["static_keying"], approx(fpg["static_keying"], 1.0))
     chk("RQ3-VI canary-echo FP_guarded", "0.0", fpg["canary_echo(ours)"], approx(fpg["canary_echo(ours)"], 0.0))
+    chk("RQ3-VI autorize FP_guarded", "0.0", fpg["autorize_baseline"], approx(fpg["autorize_baseline"], 0.0))
     fpc = m["false_positive_rate"]["clean"]
     chk("RQ3-VI canary-echo FP_clean", "0.0", fpc["canary_echo(ours)"], approx(fpc["canary_echo(ours)"], 0.0))
 

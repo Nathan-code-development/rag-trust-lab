@@ -10,6 +10,7 @@
   "methods": [
     "canary_echo(ours)",
     "idor_baseline",
+    "autorize_baseline",
     "static_keying"
   ],
   "per_class_detection_rate": {
@@ -22,6 +23,13 @@
     },
     "idor_baseline": {
       "D1": 0.0,
+      "D2": 0.0,
+      "D3": 0.0,
+      "D4": 0.0,
+      "D5": 1.0
+    },
+    "autorize_baseline": {
+      "D1": 0.991,
       "D2": 0.0,
       "D3": 0.0,
       "D4": 0.0,
@@ -54,6 +62,15 @@
       "k": 1000,
       "n": 5000
     },
+    "autorize_baseline": {
+      "recall": 0.3982,
+      "ci95": [
+        0.3847141411077178,
+        0.41184216874829377
+      ],
+      "k": 1991,
+      "n": 5000
+    },
     "static_keying": {
       "recall": 0.8,
       "ci95": [
@@ -68,17 +85,20 @@
     "clean": {
       "canary_echo(ours)": 0.0,
       "idor_baseline": 0.0,
+      "autorize_baseline": 0.0,
       "static_keying": 0.0
     },
     "guarded_ownerless_D1": {
       "canary_echo(ours)": 0.0,
       "idor_baseline": 0.0,
+      "autorize_baseline": 0.0,
       "static_keying": 1.0
     }
   },
   "overflag_trials": {
     "canary_echo(ours)": 0,
     "idor_baseline": 0,
+    "autorize_baseline": 0,
     "static_keying": 0
   }
 }
