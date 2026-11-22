@@ -1,0 +1,20 @@
+{
+  "upload_type": "software",
+  "title": "canary-echo: differential testing for derived-state tenant isolation in multi-tenant RAG applications",
+  "description": "Reproducible research artifact for the paper \"Isolated at the Route, Leaking Below: Detecting Derived-State Tenant Isolation Failures in Multi-Tenant RAG Applications.\" It contains the canary-echo differential-testing method (src/ragtrust/isolation) and the scripts and data for RQ1 (six-application cross-application study), RQ2 (ten public CVEs with Cohen's kappa = 0.458), and RQ3 (seeded-fault effectiveness). Reproduce every deterministic number with: python -m pip install -e . then python scripts/reproduce_deterministic.py (expected final line: ALL CHECKS PASSED (23/23); about 20 s; byte-identical across PYTHONHASHSEED). RQ3 is a genuine black-box evaluation: the detector drives the seeded application only through its public interface, every fault precondition lives in the seeded configuration rather than the detector, and D4 is detected via query-canary attribution. Headline result: canary-echo reaches 99.4% recall at 0% false positives over 5000 randomized seeded-fault trials, versus 20.0% for a route-level IDOR scanner, 39.8% for an Autorize-style content-comparison baseline, and 80.0% for static key analysis. Continuous integration re-runs every number on Python 3.10 / 3.11 / 3.12 on each push.",
+  "creators": [
+    {"name": "Ni, Lisheng", "orcid": "0009-0009-9931-4467"}
+  ],
+  "license": "MIT",
+  "access_right": "open",
+  "keywords": [
+    "multi-tenant RAG",
+    "tenant isolation",
+    "retrieval-augmented generation",
+    "differential testing",
+    "metamorphic testing",
+    "broken object level authorization",
+    "software reliability engineering",
+    "canary"
+  ]
+}
