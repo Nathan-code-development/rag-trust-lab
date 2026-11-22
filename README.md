@@ -12,11 +12,17 @@ the cross-application study (RQ1), the public-CVE study (RQ2), and the seeded-fa
 **Every deterministic number in the paper** is self-checked by one command:
 
 ```bash
-python -m pip install -e .                   # core deps only: numpy / pyyaml / rank-bm25 (no GPU, no API key)
+# 1) create & activate a Python 3.10+ virtual environment
+python3 -m venv .venv
+source .venv/bin/activate                    # Windows PowerShell:  .venv\Scripts\Activate.ps1
+python -m pip install -U pip
+
+# 2) install the artifact + pinned core deps (numpy / pyyaml / rank-bm25; no GPU, no API key, no network)
+python -m pip install -e .                   # exact pins instead:  pip install -r requirements-frozen.txt
 python scripts/reproduce_deterministic.py    # expected final line:  ALL CHECKS PASSED  (23/23)
 ```
 
-This re-runs RQ3 (Table V 100/20/80; Table VI multi-seed 99.3% [99.0, 99.5]) and RQ2 (Cohen's
+This re-runs RQ3 (Table V 100/20/40/80; Table VI multi-seed 99.4% [99.1, 99.6]) and RQ2 (Cohen's
 κ = 0.458), and checks each figure against the value printed in the paper, exiting non-zero on any
 mismatch. It is independent of `PYTHONHASHSEED`, models, and network. The full **claim → command →
 expected output** mapping — including the RQ1 cross-application dynamic/source evidence with runbooks

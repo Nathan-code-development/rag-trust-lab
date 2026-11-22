@@ -76,7 +76,11 @@ kit/                     cross-application test kit (adapters, echo launcher,
 Requirements: Python 3.10+ and pip. No GPU, model weights, API key, or network
 access are needed for the deterministic studies.
 
-    python -m pip install -e .
+    # create & activate a Python 3.10+ virtual environment, then install:
+    python3 -m venv .venv
+    source .venv/bin/activate            # Windows PowerShell: .venv\Scripts\Activate.ps1
+    python -m pip install -U pip
+    python -m pip install -e .           # exact pins: pip install -r requirements-frozen.txt
 
 This installs the pinned core dependencies only: numpy, pyyaml, rank-bm25==0.2.2
 (see pyproject.toml and requirements-frozen.txt). Tested on CPython 3.10-3.13; the
@@ -89,8 +93,8 @@ numbers are identical across these versions (and the CI confirms 3.10/3.11/3.12)
     python scripts/reproduce_deterministic.py        # -> ALL CHECKS PASSED (23/23)
 
 Or run the individual studies:
-    python studies/ea3_seeded/run_ea3.py             # RQ3 Table V : 100 / 20 / 80
-    python studies/ea3_seeded/run_ea3_multiseed.py 1000   # RQ3 Table VI: 99.3% [99.0,99.5]
+    python studies/ea3_seeded/run_ea3.py             # RQ3 Table V : 100 / 20 / 40 / 80
+    python studies/ea3_seeded/run_ea3_multiseed.py 1000   # RQ3 Table VI: 99.4% [99.1,99.6]
     python studies/ea2_history/kappa/compute_kappa.py     # RQ2 : Cohen's kappa = 0.458
 
 --------------------------------------------------------------------------------
@@ -98,10 +102,10 @@ Or run the individual studies:
 --------------------------------------------------------------------------------
 Full mapping is in REPRODUCE.md. Deterministic claims (bit-for-bit reproducible):
 
-  Paper Table V  (RQ3 canonical):  recall 100% / 20% / 80%; static keying FPs on
+  Paper Table V  (RQ3 canonical):  recall 100% / 20% / 40% / 80%; static keying FPs on
                  the guarded store.      -> studies/ea3_seeded/run_ea3.py
-  Paper Table VI (RQ3 multi-seed): canary-echo 99.3% (Wilson 95% CI [99.0,99.5],
-                 4965/5000); IDOR 20.0%; static 80.0%, 100% guarded-store FP.
+  Paper Table VI (RQ3 multi-seed): canary-echo 99.4% (Wilson 95% CI [99.1,99.6],
+                 4969/5000); IDOR 20.0%; Autorize 39.8%; static 80.0%, 100% guarded FP.
                                          -> run_ea3_multiseed.py 1000
   RQ2 kappa:     Cohen's kappa = 0.458, agreement 11/13.
                                          -> studies/ea2_history/kappa/compute_kappa.py
