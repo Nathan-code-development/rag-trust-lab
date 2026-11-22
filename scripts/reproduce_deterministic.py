@@ -10,7 +10,7 @@ Prints a PASS/FAIL table and exits non-zero if anything disagrees.
 Covered (fully reproducible, seed-fixed, independent of PYTHONHASHSEED and of any
 external service, model, GPU or API key):
   * RQ3 Table V  (canonical single-fault): recall 100% / 20% / 40% / 80%, static FP on guarded store
-  * RQ3 Table VI (multi-seed, N=1000):     canary-echo 99.3% [99.0,99.5]; baselines 20.0% / 39.8% / 80.0%
+  * RQ3 Table VI (multi-seed, N=1000):     canary-echo 99.4% [99.1,99.6]; baselines 20.0% / 39.8% / 80.0%
   * RQ2 kappa:                             Cohen's kappa = 0.458, agreement 11/13
 
 RQ1 (cross-application dynamic/source findings) is NOT deterministic from this repo
@@ -66,10 +66,10 @@ def main():
     m = json.loads((EA3 / "results" / "ea3_multiseed.json").read_text())
     agg = m["aggregate_recall"]
     o = agg["canary_echo(ours)"]
-    chk("RQ3-VI canary-echo recall", "0.993", round(o["recall"], 3), approx(o["recall"], 0.993))
-    chk("RQ3-VI canary-echo CI low", "0.990", round(o["ci95"][0], 3), approx(o["ci95"][0], 0.990, 0.001))
-    chk("RQ3-VI canary-echo CI high", "0.995", round(o["ci95"][1], 3), approx(o["ci95"][1], 0.995, 0.001))
-    chk("RQ3-VI canary-echo k/n", "4965/5000", f'{o["k"]}/{o["n"]}', o["k"] == 4965 and o["n"] == 5000)
+    chk("RQ3-VI canary-echo recall", "0.994", round(o["recall"], 3), approx(o["recall"], 0.994))
+    chk("RQ3-VI canary-echo CI low", "0.991", round(o["ci95"][0], 3), approx(o["ci95"][0], 0.991, 0.001))
+    chk("RQ3-VI canary-echo CI high", "0.996", round(o["ci95"][1], 3), approx(o["ci95"][1], 0.996, 0.001))
+    chk("RQ3-VI canary-echo k/n", "4969/5000", f'{o["k"]}/{o["n"]}', o["k"] == 4969 and o["n"] == 5000)
     chk("RQ3-VI IDOR recall", "0.20", round(agg["idor_baseline"]["recall"], 3), approx(agg["idor_baseline"]["recall"], 0.2))
     a = agg["autorize_baseline"]
     chk("RQ3-VI autorize recall", "0.398", round(a["recall"], 3), approx(a["recall"], 0.398))
@@ -80,7 +80,7 @@ def main():
     chk("RQ3-VI autorize per-class", str(exp_pca), {k: round(v, 3) for k, v in pca.items()},
         all(approx(pca[c], exp_pca[c]) for c in exp_pca))
     pc = m["per_class_detection_rate"]["canary_echo(ours)"]
-    exp_pc = {"D1": 0.991, "D2": 0.989, "D3": 0.985, "D4": 1.0, "D5": 1.0}
+    exp_pc = {"D1": 0.991, "D2": 0.990, "D3": 0.988, "D4": 1.0, "D5": 1.0}
     pc_ok = all(approx(pc[c], exp_pc[c]) for c in exp_pc)
     chk("RQ3-VI canary-echo per-class", str(exp_pc), {k: round(v, 3) for k, v in pc.items()}, pc_ok)
     fpg = m["false_positive_rate"]["guarded_ownerless_D1"]

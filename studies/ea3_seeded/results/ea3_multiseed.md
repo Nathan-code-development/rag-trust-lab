@@ -6,7 +6,7 @@ Each trial: fresh canary tokens + randomized document content (section count, ma
 
 | Method | D1 | D2 | D3 | D4 | D5 |
 |---|---|---|---|---|---|
-| canary_echo(ours) | 99% | 99% | 98% | 100% | 100% |
+| canary_echo(ours) | 99% | 99% | 99% | 100% | 100% |
 | idor_baseline | 0% | 0% | 0% | 0% | 100% |
 | autorize_baseline | 99% | 0% | 0% | 0% | 100% |
 | static_keying | 100% | 100% | 100% | 100% | 0% |
@@ -15,7 +15,7 @@ Each trial: fresh canary tokens + randomized document content (section count, ma
 
 | Method | recall | 95% CI | k/n |
 |---|---|---|---|
-| canary_echo(ours) | 99.3% | [99.0%, 99.5%] | 4965/5000 |
+| canary_echo(ours) | 99.4% | [99.1%, 99.6%] | 4969/5000 |
 | idor_baseline | 20.0% | [18.9%, 21.1%] | 1000/5000 |
 | autorize_baseline | 39.8% | [38.5%, 41.2%] | 1991/5000 |
 | static_keying | 80.0% | [78.9%, 81.1%] | 4000/5000 |

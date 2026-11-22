@@ -13,7 +13,7 @@ the cross-application study (RQ1), the public-CVE study (RQ2), and the seeded-fa
 
 ```bash
 python -m pip install -e .                   # core deps only: numpy / pyyaml / rank-bm25 (no GPU, no API key)
-python scripts/reproduce_deterministic.py    # expected final line:  ALL CHECKS PASSED  (17/17)
+python scripts/reproduce_deterministic.py    # expected final line:  ALL CHECKS PASSED  (23/23)
 ```
 
 This re-runs RQ3 (Table V 100/20/80; Table VI multi-seed 99.3% [99.0, 99.5]) and RQ2 (Cohen's
