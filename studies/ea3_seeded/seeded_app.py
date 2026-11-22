@@ -64,6 +64,7 @@ class SeededApp:
         self.disk_cache: Dict[str, Dict] = {}                              # D3 store (persisted)
         self.gen_cache: Dict[str, Dict] = {}                               # D4 store (generation)
         self._wk = 0
+        self._qc: Dict[str, str] = {}                                      # per-actor query canary (attribution)
 
     # ---- keying (each class lives in exactly one store) ----------------
     def _worker_key(self, owner, rid):
@@ -94,10 +95,18 @@ class SeededApp:
     def upload(self, owner: str, text: str, rid: Optional[int] = None) -> int:
         if rid is None:
             freed = sorted(r for r, res in self.db.items() if res.deleted)     # soft-deleted ids
-            rid = (freed[0] if (freed and "D2" in self.f) else self.next_id)   # D2: recycle freed id
+            recycle = freed and ("D2" in self.f or "D3" in self.f)            # id reuse enables D2/D3
+            rid = (freed[0] if recycle else self.next_id)
         self.next_id = max(self.next_id, rid + 1)
         build = hashlib.sha1(f"{owner}|{rid}|{text}".encode()).hexdigest()[:8]
         self.db[rid] = Resource(rid, owner, text, build)
+        # Persist a derived index to the disk cache. Under D3 the key omits the owner,
+        # so a pre-existing (orphan) entry is NOT overwritten by a new tenant's upload
+        # on the same id: the new resource silently inherits the stale foreign entry.
+        k = self._disk_key(owner, rid)
+        if k not in self.disk_cache:
+            ch = self._chunks(owner, rid, text)
+            self.disk_cache[k] = {"chunks": ch, "owner": owner, "build": build, "n": len(ch)}
         return rid
 
     def _chunks(self, owner, rid, text) -> List[Chunk]:
@@ -122,16 +131,19 @@ class SeededApp:
         cache[k] = (idx, r.build)
         return idx
 
-    def delete(self, owner: str, rid: int, worker: int = 0) -> int:
+    def delete(self, owner: str, rid: int) -> int:
+        """Public delete. A black-box caller cannot choose which worker processes it;
+        under D2 the app invalidates only one worker, leaving the others stale."""
         r = self.db.get(rid)
         if r is None or r.owner != owner:
             return 404
         r.deleted = True
         for w, cache in enumerate(self.worker_cache):
-            if "D2" in self.f and w != worker:
-                continue                        # D2: other workers keep the stale index
+            if "D2" in self.f and w != 0:
+                continue                        # D2: only worker 0 invalidated; others keep the stale index
             cache.pop(self._worker_key(owner, rid), None)
-        self.disk_cache.pop(self._disk_key(owner, rid), None)
+        if "D3" not in self.f:
+            self.disk_cache.pop(self._disk_key(owner, rid), None)   # D3: persisted cache is orphaned, not purged
         return 204
 
     # ---- object API (IDOR/BOLA scanner surface) -----------------------
@@ -174,14 +186,15 @@ class SeededApp:
         store's ownership check is correct UNLESS D1 is seeded. Also the path a
         stale D2 / contaminated D3 index is reached through."""
         r = self.db.get(victim_rid)
-        # D3: a persisted disk cache under this id's (owner-less) key may hold foreign content
-        dk = self._disk_key(r.owner if r else actor, victim_rid)
-        disk = self.disk_cache.get(dk) or (self.disk_cache.get(f"idx_{victim_rid}") if "D3" in self.f else None)
-        if disk is not None and ("D3" in self.f):
-            idx = BM25Index(disk["chunks"])
-            hits = idx.search(question, 3)
-            return self.llm.generate("SOURCES:\n" + "\n".join(h.chunk.text for h in hits) + f"\nQ: {question}",
-                                     actor=actor)
+        # D3: the attacker's OWN resource is served from an orphan disk-cache entry
+        #     that a previous owner persisted under an owner-less key (idx_{rid}),
+        #     because the new upload did not overwrite it and the key omits the owner.
+        if "D3" in self.f and r is not None and not r.deleted and r.owner == actor:
+            orphan = self.disk_cache.get(self._disk_key(actor, victim_rid))
+            if orphan is not None and orphan.get("owner") != actor:
+                hits = BM25Index(orphan["chunks"]).search(question, 3)
+                return self.llm.generate("SOURCES:\n" + "\n".join(h.chunk.text for h in hits)
+                                         + f"\nQ: {question}", actor=actor)
         if r is None or r.deleted:
             # after delete, D2 may leave a stale worker index reachable by id
             for cache in self.worker_cache:
@@ -201,25 +214,24 @@ class SeededApp:
                                  actor=actor)
 
     # ---- generation (D4 surface) --------------------------------------
+    def _query_canary(self, actor: str) -> str:
+        """A per-asker query canary (attribution tag). It travels in the PROMPT, not
+        in the document, so a cached generation served to the wrong tenant carries the
+        ORIGINAL asker's query canary -- the content-canary attribution behind D4."""
+        if actor not in self._qc:
+            self._qc[actor] = self.reg.mint(actor, kind="query")
+        return self._qc[actor]
+
     def quiz(self, actor: str, rid: int) -> Optional[str]:
         r = self.db.get(rid)
         if r is None or r.owner != actor:
             return None
-        key = self._gen_key(actor, r.text)
+        qc = self._query_canary(actor)
+        key = self._gen_key(actor, r.text)      # D4: content-hash only (owner-less) -> shared across tenants
         if key not in self.gen_cache:
-            self.gen_cache[key] = {"text": self.llm.generate("Quiz from: " + r.text[:300], actor=actor),
-                                   "owner": actor}
+            prompt = f"[asker {qc}] Quiz from: " + r.text[:300]
+            self.gen_cache[key] = {"text": self.llm.generate(prompt, actor=actor), "owner": actor}
         return self.gen_cache[key]["text"]
-
-    def quiz_owner(self, actor: str, rid: int) -> Optional[str]:
-        self.quiz(actor, rid)
-        r = self.db.get(rid)
-        return self.gen_cache.get(self._gen_key(actor, r.text), {}).get("owner")
-
-    def seed_disk_cache(self, owner: str, rid: int, text: str):
-        """Simulate a shipped/orphan persisted cache entry (D3 precondition)."""
-        self.disk_cache[f"idx_{rid}"] = {"chunks": self._chunks(owner, rid, text), "owner": owner,
-                                         "build": "shipped", "n": len(self._chunks(owner, rid, text))}
 
     def _next_worker(self):
         self._wk = (self._wk + 1) % self.workers

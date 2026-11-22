@@ -2,7 +2,7 @@ PY ?= python3
 
 .PHONY: reproduce rq3 rq3-multiseed rq2-kappa clean
 
-reproduce:          ## verify every deterministic paper number (RQ2 kappa, RQ3) -> ALL CHECKS PASSED (17/17)
+reproduce:          ## verify every deterministic paper number (RQ2 kappa, RQ3) -> ALL CHECKS PASSED (23/23)
 	$(PY) scripts/reproduce_deterministic.py
 
 rq3:                ## RQ3 Table V: canonical single-fault run (100 / 20 / 80)

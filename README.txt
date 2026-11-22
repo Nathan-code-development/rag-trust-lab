@@ -43,7 +43,7 @@ Archived DOI:  10.5281/zenodo.23960612
 Running the reproduction driver prints a PASS/FAIL table comparing each
 deterministic figure in the paper to the value recomputed live, and ends with:
 
-    ALL CHECKS PASSED  (17/17)
+    ALL CHECKS PASSED  (23/23)
 
 and exit code 0. Any mismatch prints "FAIL" and exits non-zero. A GitHub Actions
 workflow (.github/workflows/reproduce.yml) runs the same check on Python 3.10,
@@ -85,7 +85,7 @@ numbers are identical across these versions (and the CI confirms 3.10/3.11/3.12)
 --------------------------------------------------------------------------------
 7. GETTING STARTED (< 1 minute)
 --------------------------------------------------------------------------------
-    python scripts/reproduce_deterministic.py        # -> ALL CHECKS PASSED (17/17)
+    python scripts/reproduce_deterministic.py        # -> ALL CHECKS PASSED (23/23)
 
 Or run the individual studies:
     python studies/ea3_seeded/run_ea3.py             # RQ3 Table V : 100 / 20 / 80

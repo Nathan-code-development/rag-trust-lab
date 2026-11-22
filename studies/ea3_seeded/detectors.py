@@ -74,49 +74,63 @@ def _benign(rng: Optional[random.Random] = None) -> str:
 # ----------------------------------------------------------------- M1 ours
 
 def canary_echo(app: SeededApp, reg: CanaryRegistry, rng: Optional[random.Random] = None) -> Set[str]:
+    """Black-box: the detector drives the app ONLY through the same public surface the
+    baselines use (upload / get_object / ask / ask_referencing / delete / quiz). Every
+    fault precondition lives in the seeded app's configuration, not here; the verdict is
+    always a canary predicate (a foreign content canary, or -- for the content-addressed
+    D4 cache -- a foreign *query* canary carried as attribution)."""
     flagged: Set[str] = set()
-    cv = reg.mint("V", resource="docV")
-    note = _note(cv, rng)
     Q = "secret marker"
 
     def leaked(out):
         return bool(reg.foreign(out if isinstance(out, str) else str(out), "A"))
 
-    # D5: direct object read + body-user-id tampering
-    rid = app.upload("V", note)
+    def leaked_query(out):
+        # A foreign QUERY canary = another tenant's generation attributed to this asker.
+        return any(c.kind == "query" for c in reg.foreign(str(out), "A"))
+
+    # ---- D5: route-level authz (direct object read + body-user-id tampering) ----
+    rid = app.upload("V", _note(reg.mint("V", resource="d5"), rng))
     st, body = app.get_object("A", rid)
     if st == 200 and leaked(body):
         flagged.add("D5")
     if leaked(app.ask("A", Q, rid, body_user_id="V")):
         flagged.add("D5")
 
-    # D1: reference the victim's resource id in the retrieval path
+    # ---- D1: reference the victim's id in the retrieval request ----
     if leaked(app.ask_referencing("A", rid, Q)):
         flagged.add("D1")
 
-    # D4: attacker uploads an identical copy; generation attributed to the wrong owner
-    app.quiz("V", rid)
-    rid_a = app.upload("A", note)
-    if app.quiz_owner("A", rid_a) != "A":
+    # ---- D4: content-addressed generation sharing. Attacker uploads a byte-identical
+    #      copy; the gen cache is keyed by content hash (owner-less), so the attacker's
+    #      quiz is served the victim's cached generation, which carries the VICTIM's
+    #      query canary -- an attribution token absent from the attacker's own copy. ----
+    note4 = _note(reg.mint("V", resource="d4"), rng)
+    rid4 = app.upload("V", note4)
+    app.quiz("V", rid4)                                   # victim warms the content-hash cache
+    rid4a = app.upload("A", note4)                        # attacker uploads the identical document
+    if leaked_query(app.quiz("A", rid4a)):
         flagged.add("D4")
 
-    # D3: a persisted/shipped cache under a fresh id holds foreign content; attacker
-    #     uploads a BENIGN doc that lands on that id and reads the contaminated cache.
-    target = app.next_id
-    app.seed_disk_cache("V", target, note)             # foreign (victim) content, owner-less key idx_{target}
-    rid3 = app.upload("A", _benign(rng))                  # attacker's own content has NO canary
-    if rid3 == target and (leaked(app.ask_referencing("A", rid3, Q)) or leaked(app.ask("A", Q, rid3))):
+    # ---- D3: orphan / shipped cache. Victim persists a doc and deletes it; under D3
+    #      the owner-less disk entry is NOT purged and the id is recycled, so the
+    #      attacker's benign upload inherits the stale foreign entry. All public ops. ----
+    rid3o = app.upload("V", _note(reg.mint("V", resource="d3"), rng))
+    app.delete("V", rid3o)                                # orphan survives under D3; id freed
+    rid3 = app.upload("A", _benign(rng))                  # recycles the freed id under D3
+    if rid3 == rid3o and leaked(app.ask_referencing("A", rid3, Q)):
         flagged.add("D3")
 
-    # D2: id reuse + stale per-worker index. V warms workers, deletes on worker 0;
-    #     attacker reuses the id and references it -> stale victim index on worker 1.
-    rid2 = app.upload("V", note)
+    # ---- D2: id reuse + stale per-worker index. Victim warms the workers and deletes;
+    #      the attacker reuses the id and queries repeatedly (public ask) to reach a
+    #      worker that still serves the stale victim index. ----
+    rid2o = app.upload("V", _note(reg.mint("V", resource="d2"), rng))
     for _ in range(4):
-        app.ask("V", Q, rid2)                          # warm all workers
-    app.delete("V", rid2, worker=0)
-    rid2b = app.upload("A", _benign(rng))             # reuses rid2 iff the app recycles ids (D2)
-    if rid2b == rid2 and any(leaked(app.ask_referencing("A", rid2b, Q)) for _ in range(app.workers * 2)):
-        flagged.add("D2")                              # query repeatedly to reach any stale worker
+        app.ask("V", Q, rid2o)                            # warm the workers
+    app.delete("V", rid2o)                                # stale index remains on the other workers
+    rid2 = app.upload("A", _benign(rng))                  # recycles the freed id under D2
+    if rid2 == rid2o and any(leaked(app.ask("A", Q, rid2)) for _ in range(8)):
+        flagged.add("D2")
 
     return flagged
 
